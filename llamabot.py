@@ -9,7 +9,7 @@ from discord.ext import commands
 
 from llama_index import VectorStoreIndex, StorageContext, ServiceContext
 from llama_index.postprocessor import FixedRecencyPostprocessor
-from llama_index.embeddings import GeminiEmbedding
+from llama_index.embeddings import OpenAIEmbedding
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from llama_index.schema import TextNode, QueryBundle
 from llama_index.vector_stores.types import (
@@ -85,9 +85,9 @@ qd_client = qdrant_client.QdrantClient(
 
 qd_collection = 'discord_llamabot'
 
-embed_model = GeminiEmbedding()
+embed_model = OpenAIEmbedding()
 
-use_openai = bool(os.environ.get("USE_OPENAI", False))
+use_openai = bool(os.environ.get("USE_OPENAI", True))
 use_cohere = bool(os.environ.get("USE_COHERE", False))
 # print(use_openai)
 
@@ -95,9 +95,9 @@ use_cohere = bool(os.environ.get("USE_COHERE", False))
 if use_openai:
   from llama_index.llms import OpenAI
   # from llama_index.embeddings import OpenAIEmbedding
-  print("Using GPT-4")
+  print("Using GPT-3.5-turbo")
   llm=OpenAI(
-    model="gpt-4-0125-preview",
+    model="gpt-3.5-turbo",
   )
   # embed_model = OpenAIEmbedding(model="text-embedding-3-small")
 elif use_cohere:
@@ -226,7 +226,7 @@ def run():
 
       if listening.get(message.guild.id, False):
         if message.content.startswith('/'):
-          if message.content.startswith('/l') or message.content.startswith('/llama'):
+          if message.content.startswith('/ai'):
             remember_message(message, True)
         else:
           remember_message(message, message.author==bot.user)
